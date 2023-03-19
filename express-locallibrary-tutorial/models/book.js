@@ -16,4 +16,4 @@ BookSchema.virtual("url").get(function () {
 });
 
 //Export model
-module.exports = mongoose.model("books", BookSchema);
+module.exports = mongoose.model("Book", BookSchema);
