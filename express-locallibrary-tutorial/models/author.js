@@ -17,7 +17,7 @@ AuthorSchema.virtual("name").get(function () {
   // We want to make sure we handle the exception by returning an empty string for that case
   let fullname = "";
   if (this.first_name && this.family_name) {
-    fullname = `${this.family_name}, ${this.family_name}`;
+    fullname = `${this.first_name}, ${this.family_name}`;
   }
   if (!this.first_name || !this.family_name) {
     fullname = "";
@@ -32,6 +32,7 @@ AuthorSchema.virtual("url").get(function () {
 });
 
 AuthorSchema.virtual("date_of_birth_formatted").get(function () {
+  //prevent null
   return this.date_of_birth
     ? DateTime.fromJSDate(this.date_of_birth).toLocaleString(DateTime.DATE_MED)
     : "";
@@ -42,6 +43,19 @@ AuthorSchema.virtual("date_of_death_formatted").get(function () {
     ? DateTime.fromJSDate(this.date_of_death).toLocaleString(DateTime.DATE_MED)
     : this.date_of_birth
     ? "Present"
+    : "";
+});
+
+// For date format in forms
+AuthorSchema.virtual("date_of_birth_formatted_form").get(function () {
+  return this.date_of_birth
+    ? DateTime.fromJSDate(this.date_of_birth).toISODate()
+    : "";
+});
+
+AuthorSchema.virtual("date_of_death_formatted_form").get(function () {
+  return this.date_of_death
+    ? DateTime.fromJSDate(this.date_of_death).toISODate()
     : "";
 });
 
