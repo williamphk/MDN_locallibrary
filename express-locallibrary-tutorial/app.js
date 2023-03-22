@@ -8,12 +8,18 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const catalogRouter = require("./routes/catalog");
 
+const compression = require("compression");
+const helmet = require("helmet");
+
 var app = express();
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
-const mongoDB =
+
+// Set up mongoose connection
+const dev_db_url =
   "mongodb+srv://library:12345678L@cluster0.ynqmqjk.mongodb.net/local_library?retryWrites=true&w=majority";
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
 main().catch((err) => console.log(err));
 async function main() {
@@ -21,6 +27,18 @@ async function main() {
 }
 
 // view engine setup
+app.use(compression()); // Compress all routes
+app.use(helmet()); // Set security HTTP headers
+
+// Set up rate limiter: maximum of twenty requests per minute
+var RateLimit = require("express-rate-limit");
+var limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
+// Apply rate limiter to all requests
+app.use(limiter);
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
